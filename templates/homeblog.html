@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}
+HOME-PAGE
+{% endblock %}
+
+{% block content %}
+<style>
+    /* استایل‌های موجود */
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* مرکز کردن محتوا به صورت عمودی */
+        padding: 20px; /* فاصله داخلی */
+    }
+
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center; /* مرکز کردن کارت‌ها */
+        margin-top: 20px;
+        width: 100%; /* عرض کامل */
+    }
+
+    .card {
+        flex: 1 1 300px; /* کارت‌ها ریسپانسیو با حداقل عرض 300px */
+        margin: 10px; /* فاصله بین کارت‌ها */
+        border: none; /* حذف حاشیه */
+        border-radius: 8px; /* گرد کردن گوشه‌ها */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* سایه */
+        transition: transform 0.2s; /* انیمیشن */
+        background: linear-gradient(135deg, #f9e79f, #f1c40f); /* بک‌گراند گرادیانت زرد و خردلی */
+    }
+
+    .card:hover {
+        transform: scale(1.05); /* بزرگ‌تر شدن کارت هنگام هاور */
+    }
+
+    .card-body {
+        padding: 15px; /* فاصله داخلی */
+    }
+
+    .btn-primary {
+        background-color: #007bff; /* رنگ دکمه */
+        border: none; /* حذف حاشیه */
+        color: white; /* رنگ متن دکمه */
+    }
+
+    /* استایل‌های صفحه‌بندی */
+    .pagination {
+        display: flex;
+        justify-content: center; /* مرکز کردن صفحه‌بندی */
+        margin-top: 20px; /* فاصله بالای صفحه‌بندی */
+    }
+
+    .pagination a, .pagination span {
+        margin: 0 5px; /* فاصله بین لینک‌ها */
+    }
+</style>
+
+<div class="container">
+    <h1> serach by id :</h1>
+    <div class="search-container">
+        <form method="GET" action="{% url 'blog:index' %}">
+            <input type="text" name="search_id" placeholder="serach by id ..." aria-label="serach by id ...">
+            <button type="submit">serach</button>
+        </form>
+    </div>
+    <hr>
+    <br>
+    <div class="card-container"> <!-- کانتینر کارت‌ها -->
+        {% for post in page_obj %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><h3>{{ post.title }}</h3></h5>
+                    <p class="card-text">Author : {{ post.author.username }}</p>
+                    <p class="card-text"> Data_Publish : {{ post.date_posted }}</p>
+                    <p class="card-text"><small>ID : {{ post.id }}</small></p>
+                    <a href="{% url 'blog:post_detail' post.id %}" class="btn btn-primary btn-back">View Details</a>
+
+                </div>
+            </div>
+        {% empty %}
+            <p>there is no message</p>
+        {% endfor %}
+    </div>
+
+    {################# صفحه‌بندی ################}
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">back</a>
+            {% endif %}
+
+            <!-- لینک‌های شماره صفحه -->
+            {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                    <span class="current">{{ num }}</span>
+                {% else %}
+                    <a href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">end &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% endblock %}

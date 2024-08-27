@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* مرکز کردن محتوا به صورت عمودی */
+        padding: 20px; /* فاصله داخلی */
+    }
+
+    .post-card {
+        width: 100%; /* عرض کامل */
+        max-width: 600px; /* حداکثر عرض */
+        margin: 20px; /* فاصله بین کارت‌ها */
+        border: none; /* حذف حاشیه */
+        border-radius: 8px; /* گرد کردن گوشه‌ها */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* سایه */
+        background: linear-gradient(135deg, #f9e79f, #f1c40f); /* بک‌گراند گرادیانت زرد و خردلی */
+    }
+
+    .post-card-body {
+        padding: 15px; /* فاصله داخلی */
+    }
+
+    .btn-danger {
+        margin-top: 10px; /* فاصله بالای دکمه حذف */
+        background-color: red; /* رنگ دکمه حذف */
+        color: white; /* رنگ متن دکمه */
+        border: none; /* حذف حاشیه */
+    }
+
+    .btn-secondary {
+        margin-top: 10px; /* فاصله بالای دکمه ویرایش */
+        background-color: gray; /* رنگ دکمه ویرایش */
+        color: white; /* رنگ متن دکمه */
+        border: none; /* حذف حاشیه */
+    }
+
+    .btn-primary {
+        margin-top: 10px; /* فاصله بالای دکمه برگشت */
+        background-color: blue; /* رنگ دکمه برگشت */
+        color: white; /* رنگ متن دکمه */
+        border: none; /* حذف حاشیه */
+    }
+
+    .comment-section {
+        margin-top: 40px; /* فاصله از پست */
+        width: 100%;
+        max-width: 600px; /* حداکثر عرض */
+    }
+
+    .comment {
+        background-color: #f1f1f1; /* رنگ پس‌زمینه کامنت */
+        padding: 10px; /* فاصله داخلی کامنت */
+        margin: 10px 0; /* فاصله بین کامنت‌ها */
+        border-radius: 5px; /* گرد کردن گوشه‌ها */
+    }
+</style>
+
+<div class="container">
+    <h1>{{ post.title }}</h1>
+    <div class="post-card">
+        <div class="post-card-body">
+            <p><strong><h4>Author:</h4></strong> {{ post.author.username }}</p>
+            <p><strong><h4>Date Published:</h4></strong> {{ post.date_posted }}</p>
+            <p><strong><h3>Message number:</h3></strong> {{ post.id }}</p>
+            <hr>
+            <h3>Description :</h3>
+            <div style="background-color: white; padding: 10px; border-radius: 5px; color: black">
+                <h3>{{ post.content }}</h3> <!-- محتوای پست -->
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px; display: flex; justify-content: space-between; width: 100%; max-width: 600px;">
+        <form action="{% url 'blog:post-delete' post.id %}" method="post" onsubmit="return confirmAction('Are you sure you want to delete this post?')">
+            {% csrf_token %}
+    <button type="submit" class="btn btn-danger" style="font-size: 25px">Delete Post</button>
+        </form>
+
+        <a href="{% url 'blog:post-edit' post.id %}" class="btn btn-secondary" style="font-size: 25px">Edit Post</a>
+        <a href="{% url 'blog:index' %}" class="btn btn-primary" style="font-size: 25px">Back to Posts</a>
+    </div>
+
+    <div style="width: 100%">
+        <h3>Send Comment</h3>
+        <form method="post" style="text-align: left; width: 1000px; display: block;">
+            {% csrf_token %}
+            <div>
+                <label for="comment">Comment:</label>
+                <textarea id="comment" name="content" rows="4" cols="50" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">SEND</button>
+        </form>
+    </div>
+
+    <!-- بخش کامنت‌ها -->
+    <div class="comment-section" style="font-size: 35px">
+        <h2>Comments</h2>
+        <ul>
+            {% for comment in comments %}
+                <li class="comment">
+                    <strong>{{ comment.author.username }}:</strong> {{ comment.content }} <br>
+                    <small>{{ comment.created_at }}</small>
+                </li>
+            {% empty %}
+                <li>There is no comment</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<script>
+    function confirmAction(message) {
+        return confirm("Do you realy want to delete your message ?");
+    }
+</script>
+
+
+{% endblock %}
